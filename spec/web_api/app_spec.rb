@@ -1,5 +1,6 @@
-require "./lib/WebApi/app"
-RSpec.describe WebApi do
+require "./lib/web_api/app"
+
+RSpec.describe WebApi::App do
   it "does something useful" do
     expect(true).to eq(true)
   end
