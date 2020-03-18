@@ -1,6 +1,6 @@
 require "sinatra"
 module WebApi 
-  class SinatraApp< Sinatra::Base
+  class SinatraApp < Sinatra::Base
   get "/"do
     "Hello world"
   end

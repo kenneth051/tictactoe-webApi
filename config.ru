@@ -1,2 +1,2 @@
 require "./lib/webApi/app"
-run SinatraApp
+run WebApi::SinatraApp
