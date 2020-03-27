@@ -30,7 +30,8 @@ module WebApi
       return { "board": drawn_board }.to_json
     end
     get "/reset_game" do
-      return { "message": "result" }.to_json
+      message = @web_game.reset_game
+      return { "message": message }.to_json
     end
   end
 end

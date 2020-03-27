@@ -94,6 +94,18 @@ RSpec.describe WebApi::Game do
       expect(game.board.positions).to eq(["o", "x"])
     end
   end
+  context "reset_game" do
+    it "should call reset_board_moves and prepare_new_game and return success message" do
+      io = WebApi::Io.new
+      messages = Tictactoe::Messages.new(Tictactoe::ALL_MESSAGES, io, 0)
+      validate = WebApi::WebValidation.new(Tictactoe::Validation.new, messages)
+      game = Tictactoe::Game.new(messages, io)
+      web_game = WebApi::Game.new(game, io = io, validate)
+      expect(game).to receive(:prepare_new_game).with(no_args)
+      expect(WebApi::Game).to receive(:reset_board_moves).with(no_args)
+      expect(web_game.reset_game).to eq("success")
+    end
+  end
   context "#play" do
     it "should call validate_symbol and validate_position methods" do
       io = WebApi::Io.new
@@ -134,14 +146,14 @@ RSpec.describe WebApi::Game do
       expect(web_game.play("o", 6)).to eq({ "message": "Player using 'o' has won!" })
     end
     it "return a draw message incase we have a tie" do
-        WebApi::Game.reset_board_moves
-        io = WebApi::Io.new
-        messages = Tictactoe::Messages.new(Tictactoe::ALL_MESSAGES, io, 0)
-        validate = WebApi::WebValidation.new(Tictactoe::Validation.new, messages)
-        game = Tictactoe::Game.new(messages, io, board = FakeBoard.new(["o", "x", "o", "o", "x", "o", "x", "o", "-"]))
-        web_game = WebApi::Game.new(game,io = io, validate)
-        expect(web_game.play("x", 9)).to eq({ "message": " IT'S A DRAW!" })
-      end
+      WebApi::Game.reset_board_moves
+      io = WebApi::Io.new
+      messages = Tictactoe::Messages.new(Tictactoe::ALL_MESSAGES, io, 0)
+      validate = WebApi::WebValidation.new(Tictactoe::Validation.new, messages)
+      game = Tictactoe::Game.new(messages, io, board = FakeBoard.new(["o", "x", "o", "o", "x", "o", "x", "o", "-"]))
+      web_game = WebApi::Game.new(game, io = io, validate)
+      expect(web_game.play("x", 9)).to eq({ "message": " IT'S A DRAW!" })
+    end
   end
   context "#draw" do
     it "return a drawn board to the user" do
@@ -149,7 +161,7 @@ RSpec.describe WebApi::Game do
       messages = Tictactoe::Messages.new(Tictactoe::ALL_MESSAGES, io, 0)
       validate = WebApi::WebValidation.new(Tictactoe::Validation.new, messages)
       game = Tictactoe::Game.new(messages, io)
-      web_game = WebApi::Game.new(game,io, validate)
+      web_game = WebApi::Game.new(game, io, validate)
       expect(web_game.draw).to eq(
         ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
       )

@@ -44,6 +44,16 @@ module WebApi
       end
     end
 
+    def played_positions
+      @game.played_positions
+    end
+
+    def reset_game
+      Game.reset_board_moves
+      @game.prepare_new_game
+      return "success"
+    end
+
     def draw
       @game.board.positions
     end

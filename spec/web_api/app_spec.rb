@@ -79,9 +79,16 @@ RSpec.describe WebApi::App do
   describe "GET /reset_game" do
     it "return a success message after reseting the game" do
       headers = { "Content-Type" => "application/json" }
+      moves = [["o", 1], ["x", 5], ["o", 3], ["x", 4], ["o", 2]]
+      moves.each do |move|
+        web_game.play(move[0], move[1])
+      end
+      expect(WebApi::Game.board_moves).to eq([["o", 1], ["x", 5], ["o", 3], ["x", 4], ["o", 2]])
+      expect(web_game.played_positions).to eq(["o", "o", "o", "x", "x", "-", "-", "-", "-"])
       get "/reset_game", headers
-
-      expect(last_response.body).to eq({ "message": "result" }.to_json)
+      expect(last_response.body).to eq({ "message": "success" }.to_json)
+      expect(WebApi::Game.board_moves).to eq([])
+      expect(web_game.played_positions).to eq(["-", "-", "-", "-", "-", "-", "-", "-", "-"])
     end
   end
 
