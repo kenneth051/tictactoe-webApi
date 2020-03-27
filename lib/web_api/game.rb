@@ -51,30 +51,36 @@ module WebApi
     def reset_game
       Game.reset_board_moves
       @game.prepare_new_game
-      return "success"
+      return "Ok"
     end
 
     def draw
       @game.board.positions
     end
 
-    def game_status
-      return @game.draw? if @game.draw?
-      @game.win?
-    end
-
-    def play(symbol, position)
-      @validate.errors = []
-      validate_position(position)
-      validate_symbol(symbol)
-      return { "error" => @validate.get_errors } if @validate.get_errors.any?
-      update_moves([symbol, position])
-      @game.make_move(symbol, position)
-      update_board
+    def message_from_game
       if @game.end?
         return game_status
       end
       { "message" => "Ok" }
+    end
+
+    def game_status
+      @game.win? || @game.draw?
+    end
+
+    def play(symbol, position)
+      @validate.clear_errors
+      validate_position(position)
+      validate_symbol(symbol)
+      message = @validate.get_errors
+      if !message[:errors].any?
+        update_moves([symbol, position])
+        @game.make_move(symbol, position)
+        update_board
+        message = message_from_game
+      end
+      message
     end
   end
 end

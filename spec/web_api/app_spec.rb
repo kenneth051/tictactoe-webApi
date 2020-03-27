@@ -28,19 +28,18 @@ RSpec.describe WebApi::App do
 
       post "/play", { "symbol": "x", "position": 3 }.to_json, headers
 
-      puts "io: #{io}"
-
-      expect(last_response.body).to eq({ "success": { "message": "Ok" } }.to_json)
+      expect(last_response.body).to eq({ "message": "Ok" }.to_json)
     end
     it "returns error message if position is out of range" do
       headers = { "Content-Type" => "application/json" }
       post "/play", { "symbol": "x", "position": 0 }.to_json, headers
-      expect(last_response.body).to eq({ "error": ["message" => "position out of range, enter from 1 to 9"] }.to_json)
+      # puts last_response.errors
+      expect(last_response.body).to eq({ "errors": ["message" => "position out of range, enter from 1 to 9"] }.to_json)
     end
     it "returns error message if symbol is invalid" do
       headers = { "Content-Type" => "application/json" }
       post "/play", { "symbol": "e", "position": 8 }.to_json, headers
-      expect(last_response.body).to eq({ "error": ["message" => "invalid input, symbol be either 'x' or 'o' lowercase"] }.to_json)
+      expect(last_response.body).to eq({ "errors": ["message" => "invalid input, symbol be either 'x' or 'o' lowercase"] }.to_json)
     end
     it "returns error message if position has already been taken" do
       headers = { "Content-Type" => "application/json" }
@@ -48,7 +47,7 @@ RSpec.describe WebApi::App do
       moves.each do |move|
         post "/play", { "symbol": move[0], "position": move[1] }.to_json, headers
       end
-      expect(last_response.body).to eq({ "error": [{ "message": "position has been taken, choose another one" }] }.to_json)
+      expect(last_response.body).to eq({ "errors": [{ "message": "position has been taken, choose another one" }] }.to_json)
     end
     it "signal a winner using 'o'" do
       headers = { "Content-Type" => "application/json" }
@@ -56,7 +55,7 @@ RSpec.describe WebApi::App do
       moves.each do |move|
         post "/play", { "symbol": move[0], "position": move[1] }.to_json, headers
       end
-      expect(last_response.body).to eq({ "success": { "message": "Player using 'o' has won!" } }.to_json)
+      expect(last_response.body).to eq({ "message": "Player using 'o' has won!" }.to_json)
     end
     it "signal a winner using 'x'" do
       headers = { "Content-Type" => "application/json" }
@@ -64,7 +63,7 @@ RSpec.describe WebApi::App do
       moves.each do |move|
         post "/play", { "symbol": move[0], "position": move[1] }.to_json, headers
       end
-      expect(last_response.body).to eq({ "success": { "message": "Player using 'x' has won!" } }.to_json)
+      expect(last_response.body).to eq({ "message": "Player using 'x' has won!" }.to_json)
     end
     it "signal a draw" do
       headers = { "Content-Type" => "application/json" }
@@ -72,7 +71,7 @@ RSpec.describe WebApi::App do
       moves.each do |move|
         post "/play", { "symbol": move[0], "position": move[1] }.to_json, headers
       end
-      expect(last_response.body).to eq({ "success": { "message": " IT'S A DRAW!" } }.to_json)
+      expect(last_response.body).to eq({ "message": " IT'S A DRAW!" }.to_json)
     end
   end
 
@@ -86,7 +85,7 @@ RSpec.describe WebApi::App do
       expect(WebApi::Game.board_moves).to eq([["o", 1], ["x", 5], ["o", 3], ["x", 4], ["o", 2]])
       expect(web_game.played_positions).to eq(["o", "o", "o", "x", "x", "-", "-", "-", "-"])
       get "/reset_game", headers
-      expect(last_response.body).to eq({ "message": "success" }.to_json)
+      expect(last_response.body).to eq({ "message" => "Ok" }.to_json)
       expect(WebApi::Game.board_moves).to eq([])
       expect(web_game.played_positions).to eq(["-", "-", "-", "-", "-", "-", "-", "-", "-"])
     end

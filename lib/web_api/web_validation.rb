@@ -9,7 +9,11 @@ module WebApi
     end
 
     def get_errors
-      @errors
+      { "errors": @errors }
+    end
+
+    def clear_errors
+      @errors = []
     end
 
     def add_errors(error)

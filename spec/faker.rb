@@ -1,9 +1,22 @@
 class FakeGame
   attr_accessor :board
 
-  def initialize(board)
+  def initialize(board,endgame=false,win=nil,symbol=nil)
     @board = board
+    @endgame=endgame
+    @symbol=symbol
+    @win=win
   end
+  def end?
+    @endgame
+  end 
+  def win?
+    return{:message =>"Player using '#{@symbol}' has won!"} if @win
+  end
+  def draw?
+    {:message =>" IT'S A DRAW!" }
+  end
+
 end
 
 class WebApiGame
@@ -15,7 +28,7 @@ class WebApiGame
   end
 
   def validate_symbol_is_called
-    return @validate_symbol
+    @validate_symbol
   end
 
   def play(input)
@@ -34,7 +47,7 @@ class FakeBoard
   end
 
   def draw
-    return true
+    true
   end
 end
 
@@ -46,37 +59,37 @@ class FakeValidation
 
   def check_input_symbol(input = false)
     @called = true
-    return input
+    input
   end
 
   def check_position_range(input = false)
     @called = true
-    return input
+    input
   end
 
   def is_called
-    return @called
+    @called
   end
 
   def check_board_position(input = false, board = [])
     @called = true
-    return input
+    input
   end
 end
 
 class FakeMessages
   def out_of_range_message()
-    return 1
+    1
   end
 
   def invalid_input_message()
-    return 1
+   1
   end
 
   def position_taken_message()
-    return 1
+    1
   end
   def double_play_message()
-    return 1
+    1
   end
 end

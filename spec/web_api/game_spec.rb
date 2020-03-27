@@ -94,6 +94,26 @@ RSpec.describe WebApi::Game do
       expect(game.board.positions).to eq(["o", "x"])
     end
   end
+  context "#message_from_game " do
+    it "should return a message successful play of the game" do
+      game = FakeGame.new(FakeBoard.new([]))
+      web_game = WebApi::Game.new(game, io = nil, validate = nil)
+      expect(web_game.message_from_game).to eq({ "message" => "Ok" })
+    end
+
+    it "should return a winning message" do
+      io = WebApi::Io.new
+      game = FakeGame.new(FakeBoard.new(["x", "x", "x", "o", "o", "-", "x", "-", "-"]), true, win = true, symbol = "x")
+      web_game = WebApi::Game.new(game, io, validate = nil)
+      expect(web_game.message_from_game).to eq({ "message": "Player using 'x' has won!" })
+    end
+    it "should return a draw message" do
+      io = WebApi::Io.new
+      game = FakeGame.new(FakeBoard.new(["o", "x", "o", "o", "x", "o", "x", "o", "x"]), true, win = false, symbol = "x")
+      web_game = WebApi::Game.new(game, io, validate = nil)
+      expect(web_game.message_from_game).to eq({ "message": " IT'S A DRAW!" })
+    end
+  end
   context "reset_game" do
     it "should call reset_board_moves and prepare_new_game and return success message" do
       io = WebApi::Io.new
@@ -103,7 +123,7 @@ RSpec.describe WebApi::Game do
       web_game = WebApi::Game.new(game, io = io, validate)
       expect(game).to receive(:prepare_new_game).with(no_args)
       expect(WebApi::Game).to receive(:reset_board_moves).with(no_args)
-      expect(web_game.reset_game).to eq("success")
+      expect(web_game.reset_game).to eq("Ok")
     end
   end
   context "#play" do
@@ -122,6 +142,7 @@ RSpec.describe WebApi::Game do
       validate = WebApi::WebValidation.new(Tictactoe::Validation.new, messages)
       game = Tictactoe::Game.new(messages, io)
       web_game = WebApi::Game.new(game, io = io, validate)
+      expect(validate).to receive(:clear_errors).with(no_args)
       expect(web_game).to receive(:update_moves).with(["x", 1])
       expect(game).to receive(:make_move).with("x", 1)
       expect(game).to receive(:end?).with(no_args)
@@ -180,7 +201,7 @@ RSpec.describe WebApi::Game do
       web_game.track_played_symbols("o")
       expect(game.symbols).to eq(["x", "o"])
       web_game.track_played_symbols("o")
-      expect(validate.get_errors).to eq([{ :message => "You cannot play consecutively" }])
+      expect(validate.get_errors).to eq(:errors => [{ :message => "You cannot play consecutively" }])
       expect(game.symbols).to eq(["x", "o"])
     end
   end

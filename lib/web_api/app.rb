@@ -20,10 +20,7 @@ module WebApi
     post "/play" do
       body = JSON.parse(request.body.read)
       message = @web_game.play(body["symbol"], body["position"])
-      if message.key?("error")
-        return { "error" => message["error"] }.to_json
-      end
-      return { "success" => message }.to_json
+      return message.to_json
     end
     get "/draw" do
       drawn_board = @web_game.draw()

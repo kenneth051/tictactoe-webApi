@@ -7,7 +7,7 @@ RSpec.describe WebApi::WebValidation do
       fake_validation = FakeValidation.new()
       fake_messages = FakeMessages.new()
       validate = WebApi::WebValidation.new(fake_validation, fake_messages)
-      expect(validate.get_errors).to eq([])
+      expect(validate.get_errors).to eq({"errors":[]})
     end
   end
   context "#add_errors" do
@@ -16,7 +16,18 @@ RSpec.describe WebApi::WebValidation do
       fake_messages = FakeMessages.new()
       validate = WebApi::WebValidation.new(fake_validation, fake_messages)
       validate.add_errors("error")
-      expect(validate.get_errors).to eq(["error"])
+      expect(validate.get_errors).to eq({"errors":["error"]})
+    end
+  end
+  context "#clear_errors" do
+    it "clears existing errors" do
+      fake_validation = FakeValidation.new()
+      fake_messages = FakeMessages.new()
+      validate = WebApi::WebValidation.new(fake_validation, fake_messages)
+      validate.add_errors("error")
+      expect(validate.get_errors).to eq({"errors":["error"]})
+      validate.clear_errors
+      expect(validate.get_errors).to eq({"errors":[]})
     end
   end
   context "#check_position_range" do
