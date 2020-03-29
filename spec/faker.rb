@@ -1,29 +1,32 @@
+# frozen_string_literal: true
+
 class FakeGame
   attr_accessor :board
 
-  def initialize(board,endgame=false,win=nil,symbol=nil)
+  def initialize(board, endgame = false, win = nil, symbol = nil)
     @board = board
-    @endgame=endgame
-    @symbol=symbol
-    @win=win
-  end
-  def end?
-    @endgame
-  end 
-  def win?
-    return{:message =>"Player using '#{@symbol}' has won!"} if @win
-  end
-  def draw?
-    {:message =>" IT'S A DRAW!" }
+    @endgame = endgame
+    @symbol = symbol
+    @win = win
   end
 
+  def end?
+    @endgame
+  end
+
+  def win?
+    return { message: "Player using '#{@symbol}' has won!" } if @win
+  end
+
+  def draw?
+    { message: " IT'S A DRAW!" }
+  end
 end
 
 class WebApiGame
-  def initialize(game, io = nil, validate = nil)
-  end
+  def initialize(game, io = nil, validate = nil); end
 
-  def validate_symbol(input)
+  def validate_symbol(_input)
     @validate_symbol = true
   end
 
@@ -42,8 +45,9 @@ class FakeBoard
   def initialize(positions)
     @positions = positions
   end
+
   def is_full
-    @positions.count("-") == 0
+    @positions.count('-') == 0
   end
 
   def draw
@@ -55,7 +59,6 @@ class FakeValidation
   def initialize
     @called = false
   end
-
 
   def check_input_symbol(input = false)
     @called = true
@@ -71,25 +74,26 @@ class FakeValidation
     @called
   end
 
-  def check_board_position(input = false, board = [])
+  def check_board_position(input = false, _board = [])
     @called = true
     input
   end
 end
 
 class FakeMessages
-  def out_of_range_message()
+  def out_of_range_message
     1
   end
 
-  def invalid_input_message()
-   1
-  end
-
-  def position_taken_message()
+  def invalid_input_message
     1
   end
-  def double_play_message()
+
+  def position_taken_message
+    1
+  end
+
+  def double_play_message
     1
   end
 end

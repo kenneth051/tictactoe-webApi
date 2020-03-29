@@ -1,5 +1,7 @@
-require "json"
-require "kenneth"
+# frozen_string_literal: true
+
+require 'json'
+require 'kenneth'
 
 module WebApi
   class Game
@@ -33,9 +35,7 @@ module WebApi
     end
 
     def track_played_symbols(symbol)
-      if !@validate.check_consecutive_moves(@game.symbols, symbol)
-        @game.symbols << symbol
-      end
+      @game.symbols << symbol unless @validate.check_consecutive_moves(@game.symbols, symbol)
     end
 
     def update_board
@@ -51,7 +51,7 @@ module WebApi
     def reset_game
       Game.reset_board_moves
       @game.prepare_new_game
-      return "Ok"
+      'Ok'
     end
 
     def draw
@@ -59,10 +59,9 @@ module WebApi
     end
 
     def message_from_game
-      if @game.end?
-        return game_status
-      end
-      { "message" => "Ok" }
+      return game_status if @game.end?
+
+      { 'message' => 'Ok' }
     end
 
     def game_status
@@ -73,8 +72,8 @@ module WebApi
       @validate.clear_errors
       validate_position(position)
       validate_symbol(symbol)
-      message = @validate.get_errors
-      if !message[:errors].any?
+      message = @validate.errors
+      if message[:errors].none?
         update_moves([symbol, position])
         @game.make_move(symbol, position)
         update_board
