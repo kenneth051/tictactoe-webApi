@@ -1,35 +1,41 @@
 # WebApi
+Welcome to tictatctoe web API, you can play the game with a colleague on postman or consume it on a frontend.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/webApi`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Getting Started
+These instructions will enable you to run the project
 
-TODO: Delete this and the text above, and describe your gem
+**Prerequisites**
+Below are the things you need to get the project up and running.
+git : To update and clone the repository
+ruby: Language used to develop the api
 
-## Installation
 
-Add this line to your application's Gemfile:
+**Clone the repository to your computer**
+run `git clone https://github.com/kenneth051/tictactoe-webApi.git` to clone the project.
 
-```ruby
-gem 'webApi'
-```
+- In the project's root directory,Install the dependencies needed using bundler by running `bundler install` in the terminal.
 
-And then execute:
+**Tests and Deevelopement**
+After checking out the repo and installing dependencies. Run `rackup` in the terminal to start the sinatra server. Run `rake spec` or  `rspec` to run the tests. 
 
-    $ bundle
+**ENDPOINTS**
 
-Or install it yourself as:
+		METHOD             ACTIVITY                     ENDPOINT
+		-POST             playing the game              /play
+		
+		-GET             getting the board              /draw
 
-    $ gem install webApi
+		-GET             reset game                     /reset_game
 
-## Usage
+## Usage of the endpoints.
+**/play**
+data to be passed should be in json format for example.
 
-TODO: Write usage instructions here
+            {
+                "symbol":"o",
+                "position":9
+            }
 
-## Development
+symbol can either be `'x'` or `'o'`
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/webApi.
+position should be in the range of `1-9`.
