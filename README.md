@@ -1,6 +1,8 @@
 # WebApi
 Welcome to tictatctoe web API, you can play the game with a colleague on postman or consume it on a frontend.
 
+heroku link: https://tictactoe-webapi.herokuapp.com/
+
 ## Getting Started
 These instructions will enable you to run the project
 
