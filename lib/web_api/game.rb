@@ -51,11 +51,11 @@ module WebApi
     def reset_game
       Game.reset_board_moves
       @game.prepare_new_game
-      'Ok'
+      { 'message' => 'Ok', "board" => @game.board.positions }
     end
 
     def draw
-      @game.board.positions
+      { "board": @game.board.positions }
     end
 
     def message_from_game
@@ -69,17 +69,20 @@ module WebApi
     end
 
     def play(symbol, position)
-      @validate.clear_errors
-      validate_position(position)
-      validate_symbol(symbol)
-      message = @validate.errors
-      if message[:errors].none?
-        update_moves([symbol, position])
-        @game.make_move(symbol, position)
-        update_board
-        message = message_from_game
+      unless @game.end?
+        @validate.clear_errors
+        validate_position(position)
+        validate_symbol(symbol)
+        track_played_symbols(symbol)
+        message = @validate.errors
+        if message[:errors].none?
+          update_moves([symbol, position])
+          @game.make_move(symbol, position)
+          update_board
+          message = message_from_game.merge(draw)
+        end
       end
-      message
+      message || game_status
     end
   end
 end

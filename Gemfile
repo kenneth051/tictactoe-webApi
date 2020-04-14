@@ -8,3 +8,4 @@ gem 'rake'
 gem 'rspec'
 gem 'rubocop', require: false
 gem 'sinatra'
+gem 'sinatra-cross_origin'
