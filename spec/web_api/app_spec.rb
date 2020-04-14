@@ -24,13 +24,16 @@ RSpec.describe WebApi::App do
   end
 
   describe 'POST /play' do
-    before { WebApi::Game.reset_board_moves }
+    before do
+      WebApi::Game.reset_board_moves
+    end
     it 'updates the board and returns ok' do
       headers = { 'Content-Type' => 'application/json' }
 
       post '/play', { "symbol": 'x', "position": 3 }.to_json, headers
+      expected_response = { "message": 'Ok' , "board": ['-', '-', 'x', '-', '-', '-', '-', '-', '-'] }
 
-      expect(last_response.body).to eq({ "message": 'Ok' }.to_json)
+      expect(last_response.body).to eq(expected_response.to_json)
     end
     it 'returns error message if position is out of range' do
       headers = { 'Content-Type' => 'application/json' }
@@ -56,31 +59,34 @@ RSpec.describe WebApi::App do
     it "signal a winner using 'o'" do
       headers = { 'Content-Type' => 'application/json' }
       moves = [['o', 1], ['x', 5], ['o', 3], ['x', 4], ['o', 2]]
+      expected_response = { "message": "Player using 'o' has won!" , "board": ['o', 'o', 'o', 'x', 'x', '-', '-', '-', '-']}
       moves.each do |move|
         post '/play', { "symbol": move[0], "position": move[1] }.to_json, headers
       end
       expect(last_response.body)
-        .to eq({ "message": "Player using 'o' has won!" }.to_json)
+        .to eq(expected_response.to_json)
     end
     it "signal a winner using 'x'" do
       headers = { 'Content-Type' => 'application/json' }
       moves = [['x', 1], ['o', 5], ['x', 3], ['o', 4], ['x', 2]]
+      expected_response = { "message": "Player using 'x' has won!" , "board": ['x', 'x', 'x', 'o', 'o', '-', '-', '-', '-']}
       moves.each do |move|
         post '/play', { "symbol": move[0], "position": move[1] }.to_json, headers
       end
       expect(last_response.body)
-        .to eq({ "message": "Player using 'x' has won!" }.to_json)
+        .to eq(expected_response.to_json)
     end
     it 'signal a draw' do
       headers = { 'Content-Type' => 'application/json' }
       moves = [
-        ['o', 1], ['x', 2], ['o', 3], ['o', 4],
-        ['x', 5], ['o', 6], ['x', 7], ['o', 8], ['x', 9]
+        ['o', 1], ['x', 2], ['o', 3], ['x', 5],
+        ['o', 4], ['x', 7], ['o', 8], ['x', 9], ['o', 6],
       ]
+      expected_response = { "message": " IT'S A DRAW!" , "board": ['o', 'x', 'o', 'o', 'x', 'o', 'x', 'o', 'x']}
       moves.each do |move|
         post '/play', { "symbol": move[0], "position": move[1] }.to_json, headers
       end
-      expect(last_response.body).to eq({ "message": " IT'S A DRAW!" }.to_json)
+      expect(last_response.body).to eq(expected_response.to_json)
     end
   end
 
@@ -96,7 +102,8 @@ RSpec.describe WebApi::App do
       expect(web_game.played_positions)
         .to eq(['o', 'o', 'o', 'x', 'x', '-', '-', '-', '-'])
       get '/reset_game', headers
-      expect(last_response.body).to eq({ 'message' => 'Ok' }.to_json)
+      expected_response = { 'message' => 'Ok', "board": ['-', '-', '-', '-', '-', '-', '-', '-', '-'] }
+      expect(last_response.body).to eq(expected_response.to_json)
       expect(WebApi::Game.board_moves).to eq([])
       expect(web_game.played_positions)
         .to eq(['-', '-', '-', '-', '-', '-', '-', '-', '-'])

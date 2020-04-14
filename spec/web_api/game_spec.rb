@@ -129,9 +129,10 @@ RSpec.describe WebApi::Game do
       validate = WebApi::WebValidation.new(Tictactoe::Validation.new, messages)
       game = Tictactoe::Game.new(messages, io)
       web_game = WebApi::Game.new(game, io, validate)
+      expected_response = { "board" => ["-", "-", "-", "-", "-", "-", "-", "-", "-"], "message" => "Ok" }
       expect(game).to receive(:prepare_new_game).with(no_args)
       expect(WebApi::Game).to receive(:reset_board_moves).with(no_args)
-      expect(web_game.reset_game).to eq('Ok')
+      expect(web_game.reset_game).to eq(expected_response)
     end
   end
   context '#play' do
@@ -153,7 +154,7 @@ RSpec.describe WebApi::Game do
       expect(validate).to receive(:clear_errors).with(no_args)
       expect(web_game).to receive(:update_moves).with(['x', 1])
       expect(game).to receive(:make_move).with('x', 1)
-      expect(game).to receive(:end?).with(no_args)
+      expect(game).to receive(:end?).twice.with(no_args)
       web_game.play('x', 1)
     end
     it "ensure player using 'x' gets a winning message" do
@@ -164,8 +165,9 @@ RSpec.describe WebApi::Game do
       input = ['-', 'o', 'o', 'x', 'x', '-', 'o', '-', '-']
       game = Tictactoe::Game.new(messages, io, FakeBoard.new(input))
       web_game = WebApi::Game.new(game, io, validate)
+      expected_response = { "message": "Player using 'x' has won!", "board": ["-", "o", "o", "x", "x", "x", "o", "-", "-"] }
       expect(web_game.play('x', 6))
-        .to eq({ "message": "Player using 'x' has won!" })
+        .to eq(expected_response)
     end
     it "ensure player using 'o' gets a winning message" do
       WebApi::Game.reset_board_moves
@@ -175,8 +177,9 @@ RSpec.describe WebApi::Game do
       input = ['-', 'x', 'x', 'o', 'o', '-', 'x', '-', '-']
       game = Tictactoe::Game.new(messages, io, FakeBoard.new(input))
       web_game = WebApi::Game.new(game, io, validate)
+      expected_response = { "message": "Player using 'o' has won!", "board": ["-", "x", "x", "o", "o", "o", "x", "-", "-"] }
       expect(web_game.play('o', 6))
-        .to eq({ "message": "Player using 'o' has won!" })
+        .to eq(expected_response)
     end
     it 'return a draw message incase we have a tie' do
       WebApi::Game.reset_board_moves
@@ -186,7 +189,8 @@ RSpec.describe WebApi::Game do
       input = ['o', 'x', 'o', 'o', 'x', 'o', 'x', 'o', '-']
       game = Tictactoe::Game.new(messages, io, FakeBoard.new(input))
       web_game = WebApi::Game.new(game, io, validate)
-      expect(web_game.play('x', 9)).to eq({ "message": " IT'S A DRAW!" })
+      expected_response = { "message": " IT'S A DRAW!", "board": ['o', 'x', 'o', 'o', 'x', 'o', 'x', 'o', 'x'] }
+      expect(web_game.play('x', 9)).to eq(expected_response)
     end
   end
   context '#draw' do
@@ -196,9 +200,8 @@ RSpec.describe WebApi::Game do
       validate = WebApi::WebValidation.new(Tictactoe::Validation.new, messages)
       game = Tictactoe::Game.new(messages, io)
       web_game = WebApi::Game.new(game, io, validate)
-      expect(web_game.draw).to eq(
-        ['-', '-', '-', '-', '-', '-', '-', '-', '-']
-      )
+      expected_response = { "board": ['-', '-', '-', '-', '-', '-', '-', '-', '-'] }
+      expect(web_game.draw).to eq(expected_response)
     end
   end
   context '#prevent_consecutive_moves' do

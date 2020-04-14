@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sinatra'
+require 'sinatra/cross_origin'
 require 'json'
 require './lib/web_api/game'
 require './lib/web_api/io'
@@ -25,18 +26,32 @@ module WebApi
       @web_game = web_game
     end
 
+    configure do
+      enable :cross_origin
+    end
+
+    before do
+      response.headers['Access-Control-Allow-Origin'] = '*'
+    end
+
     post '/play' do
       body = JSON.parse(request.body.read)
       message = @web_game.play(body['symbol'], body['position'])
       return message.to_json
     end
     get '/draw' do
-      drawn_board = @web_game.draw
-      return { "board": drawn_board }.to_json
+      message = @web_game.draw
+      return message.to_json
     end
     get '/reset_game' do
       message = @web_game.reset_game
-      return { "message": message }.to_json
+      return message.to_json
+    end
+    options "*" do
+      response.headers["Allow"] = "GET, PUT, POST, DELETE, OPTIONS"
+      response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-User-Email, X-Auth-Token"
+      response.headers["Access-Control-Allow-Origin"] = "*"
+      200
     end
   end
 end
